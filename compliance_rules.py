@@ -15,46 +15,69 @@ class PersonCompliance:
     evidence: List[str]               # short rule evidence strings
 
 
-def _iou(a, b) -> float:
-    ax1, ay1, ax2, ay2 = a
-    bx1, by1, bx2, by2 = b
-    inter_x1, inter_y1 = max(ax1, bx1), max(ay1, by1) #computing intersection rectangle
-    inter_x2, inter_y2 = min(ax2, bx2), min(ay2, by2)
-    iw, ih = max(0, inter_x2 - inter_x1), max(0, inter_y2 - inter_y1) #intersection widt/height
-    inter = iw * ih
-    if inter == 0:
-        return 0.0 #if they don't overlap width/height == 0
-    area_a = (ax2 - ax1) * (ay2 - ay1)
-    area_b = (bx2 - bx1) * (by2 - by1)
-    return inter / (area_a + area_b - inter + 1e-9)
+# def _iou(a, b) -> float:
+#     ax1, ay1, ax2, ay2 = a
+#     bx1, by1, bx2, by2 = b
+#     inter_x1, inter_y1 = max(ax1, bx1), max(ay1, by1) #computing intersection rectangle
+#     inter_x2, inter_y2 = min(ax2, bx2), min(ay2, by2)
+#     iw, ih = max(0, inter_x2 - inter_x1), max(0, inter_y2 - inter_y1) #intersection widt/height
+#     inter = iw * ih
+#     if inter == 0:
+#         return 0.0 #if they don't overlap width/height == 0
+#     area_a = (ax2 - ax1) * (ay2 - ay1)
+#     area_b = (bx2 - bx1) * (by2 - by1)
+#     return inter / (area_a + area_b - inter + 1e-9)
 
 
-def assign_ppe_to_people(
-    detections: List[Detection],
-    person_label: str = "person",
-    iou_threshold: float = 0.15,
-) -> Dict[Tuple[int, int, int, int], List[Detection]]:
-    """
-    Groups PPE detections under the most overlapping person box.
-    """
+# def assign_ppe_to_people(
+#     detections: List[Detection],
+#     person_label: str = "class6",
+#     iou_threshold: float = 0.10,
+# ) -> Dict[Tuple[int, int, int, int], List[Detection]]:
+#     """
+#     Groups PPE detections under the most overlapping person box.
+#     """
+#     people = [d for d in detections if d.cls_name.lower() == person_label]
+#     others = [d for d in detections if d.cls_name.lower() != person_label]
+
+#     mapping: Dict[Tuple[int, int, int, int], List[Detection]] = {p.xyxy: [] for p in people}
+
+#     for det in others:
+#         best_person = None
+#         best_iou = 0.0
+#         for p in people:
+#             i = _iou(det.xyxy, p.xyxy)
+#             if i > best_iou:
+#                 best_iou = i
+#                 best_person = p
+
+#         if best_person is not None and best_iou >= iou_threshold:
+#             mapping[best_person.xyxy].append(det)
+
+#     return mapping
+
+def _center_inside(child_box, parent_box, margin=15):
+    x1, y1, x2, y2 = child_box
+    px1, py1, px2, py2 = parent_box
+    cx = (x1 + x2) / 2
+    cy = (y1 + y2) / 2
+    return (px1 - margin <= cx <= px2 + margin) and (py1 - margin <= cy <= py2 + margin)
+
+
+def assign_ppe_to_people(detections, person_label="class6", margin=15):
     people = [d for d in detections if d.cls_name.lower() == person_label]
     others = [d for d in detections if d.cls_name.lower() != person_label]
 
-    mapping: Dict[Tuple[int, int, int, int], List[Detection]] = {p.xyxy: [] for p in people}
+    mapping = {p.xyxy: [] for p in people}
 
     for det in others:
-        best_person = None
-        best_iou = 0.0
         for p in people:
-            i = _iou(det.xyxy, p.xyxy)
-            if i > best_iou:
-                best_iou = i
-                best_person = p
-
-        if best_person is not None and best_iou >= iou_threshold:
-            mapping[best_person.xyxy].append(det)
+            if _center_inside(det.xyxy, p.xyxy, margin=margin):
+                mapping[p.xyxy].append(det)
+                break
 
     return mapping
+
 
 
 def evaluate_compliance(

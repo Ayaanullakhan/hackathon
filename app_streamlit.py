@@ -42,14 +42,9 @@ img_bgr = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
 dets = detector.predict(img_bgr, conf=conf)
 
 label_map = {
-    "helmet": "hardhat",
-    "hardhat": "hardhat",
-    "safety vest": "vest",
-    "vest": "vest",
-    "goggles": "goggles",
-    "gloves": "gloves",
-    "boots": "boots",
-    "mask": "mask",
+    "class6": "person",
+    "class0": "hardhat",
+    "class2": "vest",
 }
 
 people = evaluate_compliance(dets, required_ppe=required, label_map=label_map)
