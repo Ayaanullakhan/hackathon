@@ -1,0 +1,9 @@
+ultralytics>=8.2.0
+opencv-python
+numpy
+pillow
+streamlit
+fastapi
+uvicorn
+python-dotenv
+openai>=1.0.0
