@@ -1,0 +1,16 @@
+path: C:\Users\ayans\VSCodeProjects\hackathon\datasets\construction-ppe
+train: images/train
+val: images/val
+
+names:
+  0: class0
+  1: class1
+  2: class2
+  3: class3
+  4: class4
+  5: class5
+  6: class6
+  7: class7
+  8: class8
+  9: class9
+  10: class10
