@@ -16,9 +16,7 @@
 | Field | Your Answer |
 |-------|-------------|
 | **Project Name** |AI-Driven PPE Compliance Monitoring for Mining & Construction|
-| **One-Line Description** | An AI-powered Personal Protective Equipment (PPE) compliance monitoring
-system designed for high-risk environments such as construction sites
-and mining operations.|
+| **One-Line Description** | An AI-powered Personal Protective Equipment (PPE) compliance monitoring system designed for high-risk environments such as construction sitesand mining operations.|
 | **Demo Video Link** |https://youtu.be/g2DmaOItZok |
 | **Tech Stack** | Streamlit, Python, Ultralytics and OpenAPI|
 | **AI Provider(s) Used** | ChatGPT|
