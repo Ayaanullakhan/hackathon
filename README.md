@@ -1,9 +1,28 @@
 # Sophiie AI Agents Hackathon 2026
 
-## Participant
+## Your Submission
 
-**Name:** Ayaanulla Khan\
-**University:** Deakin University
+> **Instructions:** Fill out this section in your forked repo. This is what judges will see first.
+
+### Participant
+
+| Field | Your Answer |
+|-------|-------------|
+| **Name** | Ayaanulla Khan|
+| **University / Employer** | Deakin University|
+
+### Project
+
+| Field | Your Answer |
+|-------|-------------|
+| **Project Name** |AI-Driven PPE Compliance Monitoring for Mining & Construction|
+| **One-Line Description** | An AI-powered Personal Protective Equipment (PPE) compliance monitoring
+system designed for high-risk environments such as construction sites
+and mining operations.|
+| **Demo Video Link** |https://youtu.be/g2DmaOItZok |
+| **Tech Stack** | Streamlit, Python, Ultralytics and OpenAPI|
+| **AI Provider(s) Used** | ChatGPT|
+
 
 ------------------------------------------------------------------------
 
