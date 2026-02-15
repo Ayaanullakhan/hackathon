@@ -5,7 +5,7 @@ import streamlit as st
 from PIL import Image
 from ppe_detector import PPEDetector
 from compliance_rules import evaluate_compliance
-from grok_agent import generate_audit_report
+from openai_agent import generate_audit_report
 
 
 st.set_page_config(page_title="Site risk Spotter", layout="wide")
@@ -74,7 +74,7 @@ for i, p in enumerate(people, start=1):
         for e in p.evidence:
             st.write("•", e)
 
-if st.button("Generate audit report (Grok)"):
+if st.button("Generate audit report (OpenAI)"):
     payload = {
         "site_policy": required,
         "per_person": [
@@ -94,3 +94,45 @@ if st.button("Generate audit report (Grok)"):
 
     st.subheader("Audit summary")
     st.json(report)
+
+
+per_person = report.get("per_person", [])
+site_policy = report.get("site_policy", [])
+
+if per_person:
+    overall_percent = round(sum(p.get("compliance_percent", 0) for p in per_person) / len(per_person))
+    risk_levels = [p.get("risk_level", "HIGH") for p in per_person]
+    overall_risk = "HIGH" if "HIGH" in risk_levels else ("MEDIUM" if "MEDIUM" in risk_levels else "LOW")
+
+    missing_items = set()
+    for p in per_person:
+        missing_items.update([m.lower() for m in p.get("missing_ppe", [])])
+
+else:
+    overall_percent = 0
+    overall_risk = "HIGH"
+    missing_items = set()
+
+st.subheader("Risk Narrative")
+
+if overall_risk == "LOW":
+    narrative = (
+        f"Low risk: observed PPE compliance is strong at {overall_percent}%. "
+        f"All detected personnel meet the current site policy ({', '.join(site_policy)}). "
+        "Recommendation: maintain spot-checks and re-audit at shift change."
+    )
+elif overall_risk == "MEDIUM":
+    narrative = (
+        f"Medium risk: overall compliance is {overall_percent}%. "
+        f"Some PPE gaps were detected ({', '.join(sorted(missing_items)) if missing_items else 'unspecified'}). "
+        "Recommendation: correct immediately and re-scan the area."
+    )
+else:
+    narrative = (
+        f"High risk: overall compliance is {overall_percent}%. "
+        f"Critical PPE gaps were detected ({', '.join(sorted(missing_items)) if missing_items else 'unspecified'}). "
+        "Recommendation: pause work in the active zone until compliance is restored."
+    )
+
+st.write(narrative)
+
